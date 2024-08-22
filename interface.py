@@ -11,6 +11,10 @@ def slider() -> Dict[str, Any]:
     presence_penalty = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=0.0, key="presence_penalty")
     language = st.sidebar.selectbox("Language", Language.get_languages(), key="language")
     is_validate = validate_api_key(api_key, "openai")
+    if is_validate:
+        st.sidebar.success("API Key 유효성 검사 성공")
+    else:
+        st.sidebar.error("API Key 유효성 검사 실패")
     return {
         "api_key": api_key,
         "is_validate": is_validate,
