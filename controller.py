@@ -35,13 +35,30 @@ def combine_prompt(data: Data) -> str:
 def generate_fewshot(data: Data) -> str:
     pass
 
+input_cost_per_token_gpt4o_mini = 0.00000015
+output_cost_per_token_gpt4o_mini = 0.0000006
+
+def calculate_cost(prompt : str, data: Data) -> float:
+    if prompt == "":
+        return 0
+    enc = tiktoken.encoding_for_model("gpt-4o-mini")
+    input_token_count = len(enc.encode(prompt))
+    max_example_length = max(
+        (len(example["user_input"]) + len(example["assistant_output"]) 
+         for example in st.session_state.examples),
+        default=0
+    )
+    output_expacted_token_count = max_example_length * data.get("count_generation")
+    input_cost = input_token_count * input_cost_per_token_gpt4o_mini
+    output_cost = output_expacted_token_count * output_cost_per_token_gpt4o_mini
+    return input_cost + output_cost, input_token_count + output_expacted_token_count
+
 def postprocess(data: Data) -> Data:
     prompt = combine_prompt(data)
-    enc = tiktoken.encoding_for_model("gpt-4o-mini")
-    token_count = len(enc.encode(prompt))
+    token_cost, token_count = calculate_cost(prompt, data)
     data.set("result_prompt", prompt)
+    data.set("token_cost", token_cost)
     data.set("token_count", token_count)
-
     response = generate_fewshot(data)
     data.set("result_generation_fewshot", response)
     return data
@@ -50,7 +67,7 @@ not_yet_generated_notice = "아직 생성되지 않았습니다."
 
 def update_interface(data: Data) -> None:
     data.get("count_notice").text(f"생성시 필요 토큰 개수: {data.get('token_count')}")
-    cost = data.get("token_count") * 0.000005
+    cost = data.get("token_cost")
     data.get("cost_notice").text(f"생성 비용: {cost:.5f} 달러")
     if data.get("example_append"):
         if data.get("assistant_output").get():
