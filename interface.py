@@ -81,7 +81,7 @@ def main_interface() -> Dict[str, Any]:
         fewshot_generation_button = st.button("few-shot 생성", on_click=lambda: generation_on_click())
 
     with col3:
-        display_result(prompt)
+        asset = display_result(prompt)
     return {
         "prompt": prompt,
         "requirements": requirements,
@@ -95,7 +95,8 @@ def main_interface() -> Dict[str, Any]:
         "assistant_output_text_input_key": "assistant_output",
         "example_append": example_append,
         "example_addition_notice": example_addition_notice,
-        "fewshot_generation_button": fewshot_generation_button
+        "fewshot_generation_button": fewshot_generation_button,
+        "result_display_asset": asset["result_display_asset"]
     }
 
 def render() -> Data:
