@@ -32,13 +32,21 @@ def combine_prompt(data: Data) -> str:
     prompt = prompt.replace("{{count_generation}}", str(count_generation))
     return prompt
 
+def generate_fewshot(data: Data) -> str:
+    pass
+
 def postprocess(data: Data) -> Data:
     prompt = combine_prompt(data)
     enc = tiktoken.encoding_for_model("gpt-4o-mini")
     token_count = len(enc.encode(prompt))
     data.set("result_prompt", prompt)
     data.set("token_count", token_count)
+
+    response = generate_fewshot(data)
+    data.set("result_generation_fewshot", response)
     return data
+
+not_yet_generated_notice = "아직 생성되지 않았습니다."
 
 def update_interface(data: Data) -> None:
     data.get("count_notice").text(f"생성시 필요 토큰 개수: {data.get('token_count')}")
@@ -58,8 +66,11 @@ def update_interface(data: Data) -> None:
         else:
             data.get("example_addition_notice").error("예제 추가 실패")
 
-    display_result_prompt(data.get("result_prompt"), data.get("result_combined_prompt"))
-    display_result_generated_fewshot("result", data.get("result_generation_fewshot"))
+    display_result_prompt(data.get("result_prompt"), data.get("asset_combined_prompt"))
+    if data.get("result_generation_fewshot"):
+        display_result_generated_fewshot(data.get("result_generation_fewshot"), data.get("asset_generation_fewshot"))
+    else:
+        display_result_generated_fewshot(not_yet_generated_notice, data.get("asset_generation_fewshot"))
 
 def run_impl() -> None:
     st.set_page_config(layout="wide")

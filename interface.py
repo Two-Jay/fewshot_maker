@@ -132,8 +132,8 @@ def main_interface() -> Dict[str, Any]:
         "example_append": example_append,
         "example_addition_notice": example_addition_notice,
         "fewshot_generation_button": fewshot_generation_button,
-        "result_combined_prompt": asset["combined_prompt"],
-        "result_generation_fewshot": asset["generation_result"]
+        "asset_combined_prompt": asset["combined_prompt"],
+        "asset_generation_fewshot": asset["generation_result"]
     }
 
 def render() -> Data:
