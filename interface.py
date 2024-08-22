@@ -1,6 +1,7 @@
 import streamlit as st
 from typing import Dict, Any
 from classes import Data, Clearable_Text_Input, Language
+from utils import validate_api_key
 
 def slider() -> Dict[str, Any]:
     api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
@@ -9,8 +10,10 @@ def slider() -> Dict[str, Any]:
     frequency_penalty = st.sidebar.slider("Frequency Penalty", min_value=0.0, max_value=1.0, step=0.1, value=0.0, key="frequency_penalty")
     presence_penalty = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=0.0, key="presence_penalty")
     language = st.sidebar.selectbox("Language", Language.get_languages(), key="language")
+    is_validate = validate_api_key(api_key, "openai")
     return {
         "api_key": api_key,
+        "is_validate": is_validate,
         "temperature": temperature,
         "top_p": top_p,
         "frequency_penalty": frequency_penalty,
@@ -75,7 +78,6 @@ def display_result_generation_tab() -> None:
     return result_generation_display_asset
 
 def generation_on_click() -> None:
-    st.write("generation complete")
     st.session_state.id_counter.reset()
     st.session_state.examples = []
 

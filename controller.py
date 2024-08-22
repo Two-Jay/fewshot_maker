@@ -32,8 +32,22 @@ def combine_prompt(data: Data) -> str:
     prompt = prompt.replace("{{count_generation}}", str(count_generation))
     return prompt
 
-def generate_fewshot(data: Data) -> str:
-    pass
+from openai import OpenAI
+
+def generate_fewshot(combined_prompt: str, api_key: str, is_validate: bool) -> str:
+    if api_key == "":
+        return ""
+    if is_validate:
+        client = OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": combined_prompt}
+            ]
+        )
+        return response.choices[0].message.content
+    else:
+        return ""
 
 input_cost_per_token_gpt4o_mini = 0.00000015
 output_cost_per_token_gpt4o_mini = 0.0000006
@@ -59,8 +73,11 @@ def postprocess(data: Data) -> Data:
     data.set("result_prompt", prompt)
     data.set("token_cost", token_cost)
     data.set("token_count", token_count)
-    response = generate_fewshot(data)
-    data.set("result_generation_fewshot", response)
+    if data.get("fewshot_generation_button"):
+        result = generate_fewshot(prompt, data.get("api_key"), data.get("is_validate"))
+        data.set("result_generation_fewshot", result)
+    else:
+        data.set("result_generation_fewshot", "")
     return data
 
 not_yet_generated_notice = "아직 생성되지 않았습니다."
