@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from random import randint
 from classes import IdCounter
 from interface import render, display_result_prompt
+import os
 
 def session_state_init() -> None:
     if "examples" not in st.session_state:
@@ -12,13 +13,22 @@ def session_state_init() -> None:
     if "id_counter" not in st.session_state:
         st.session_state.id_counter = IdCounter()
 
-def combine_prompt(data: Data, examples: List[Dict[str, Any]] = None) -> str:
-    prompt = data.get("prompt")
+def read_file(file_path: str) -> str:
+    with open(file_path, "r") as file:
+        return file.read()
+
+def combine_prompt(data: Data) -> str:
+    base_prompt = read_file(f"{os.path.dirname(__file__)}/prompt/generate_fewshots_base.md")
+    prompt = base_prompt.replace("{{prompt}}", data.get("prompt"))
     requirements = data.get("requirements")
     constraints = data.get("constraints")
     count_generation = data.get("count_generation")
     prompt = prompt.replace("{{requirements}}", requirements) if requirements else prompt.replace("{{requirements}}", "None")
     prompt = prompt.replace("{{constraints}}", constraints) if constraints else prompt.replace("{{constraints}}", "None")
+    prompt = prompt.replace("\n", "<br>")
+    format_instructions = read_file(f"{os.path.dirname(__file__)}/prompt/format_instructions.md")
+    prompt = prompt.replace("{{format_instructions}}", format_instructions)
+    prompt = prompt.replace("{{language}}", data.get("language"))
     prompt = prompt.replace("{{count_generation}}", str(count_generation))
     return prompt
 
@@ -35,10 +45,10 @@ def update_interface(data: Data) -> None:
     cost = data.get("token_count") * 0.000005
     data.get("cost_notice").text(f"생성 비용: {cost:.5f} 달러")
     if data.get("example_append"):
-        if data.get("user_input").get() and data.get("assistant_output").get():
+        if data.get("assistant_output").get():
             st.session_state.examples.append({
                 "id": st.session_state.id_counter.get(),
-                "user_input": data.get("user_input").get(),
+                "user_input": data.get("user_input").get() if data.get("user_input").get() else "",
                 "assistant_output": data.get("assistant_output").get(),
             })
             data.get("user_input").clear()

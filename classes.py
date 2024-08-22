@@ -50,3 +50,15 @@ class Clearable_Text_Input:
     
     def get_asset(self):
         return self
+
+from enum import Enum
+
+class Language(Enum):
+    한국어 = "Korean"
+    English = "English"
+    Arabic = "Arabic"
+
+    def get_languages():
+        return [language.value for language in Language]
+
+ 

@@ -1,6 +1,6 @@
 import streamlit as st
 from typing import Dict, Any
-from classes import Data, Clearable_Text_Input
+from classes import Data, Clearable_Text_Input, Language
 
 def slider() -> Dict[str, Any]:
     api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
@@ -8,12 +8,14 @@ def slider() -> Dict[str, Any]:
     top_p = st.sidebar.slider("Top P", min_value=0.0, max_value=1.0, step=0.1, value=1.0, key="top_p")
     frequency_penalty = st.sidebar.slider("Frequency Penalty", min_value=0.0, max_value=1.0, step=0.1, value=0.0, key="frequency_penalty")
     presence_penalty = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=0.0, key="presence_penalty")
+    language = st.sidebar.selectbox("Language", Language.get_languages(), key="language")
     return {
         "api_key": api_key,
         "temperature": temperature,
         "top_p": top_p,
         "frequency_penalty": frequency_penalty,
-        "presence_penalty": presence_penalty
+        "presence_penalty": presence_penalty,
+        "language": language
     }
 
 interface_whole_height = 700
@@ -34,9 +36,26 @@ def display_examples() -> None:
                     st.session_state.examples.remove(example)
                     st.rerun()
 
-def display_result_prompt(prompt: str, asset: st.empty) -> None:
-    if prompt and asset:
-        formatted_result = prompt.replace('\n', '<br>')
+def get_sample_list_as_string() -> str:
+    lst = []
+    for i in st.session_state.examples:
+        if i["user_input"] == "" and i["assistant_output"] != "":
+            lst.append({
+                "assistant_output": i["assistant_output"]
+            })
+        else:
+            lst.append({
+                "user_input": i["user_input"],
+                "assistant_output": i["assistant_output"]
+            })
+    return f"```\n{"\n".join([str(i) for i in lst])}\n```"
+
+def display_result_prompt(formatted_result: str, asset: st.empty) -> None:
+    if formatted_result and asset:
+        if len(st.session_state.examples) > 0:
+            formatted_result = formatted_result.replace("{{sample}}", get_sample_list_as_string())
+        else:
+            formatted_result = formatted_result.replace("{{sample}}", "None")
         asset.markdown(formatted_result, unsafe_allow_html=True)
 
 def display_result(data: Data) -> None:
