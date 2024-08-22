@@ -4,7 +4,7 @@ import tiktoken
 from typing import List, Dict, Any
 from random import randint
 from classes import IdCounter
-from interface import render, display_result_prompt
+from interface import render, display_result_prompt, display_result_generated_fewshot
 import os
 
 def session_state_init() -> None:
@@ -58,7 +58,8 @@ def update_interface(data: Data) -> None:
         else:
             data.get("example_addition_notice").error("예제 추가 실패")
 
-    display_result_prompt(data.get("result_prompt"), data.get("result_display_asset"))
+    display_result_prompt(data.get("result_prompt"), data.get("result_combined_prompt"))
+    display_result_generated_fewshot("result", data.get("result_generation_fewshot"))
 
 def run_impl() -> None:
     st.set_page_config(layout="wide")

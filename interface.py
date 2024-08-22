@@ -58,13 +58,21 @@ def display_result_prompt(formatted_result: str, asset: st.empty) -> None:
             formatted_result = formatted_result.replace("{{sample}}", "None")
         asset.markdown(formatted_result, unsafe_allow_html=True)
 
-def display_result(data: Data) -> None:
-    container = st.container(height=int(interface_whole_height * 1.294))
+def display_result_generated_fewshot(generated : str, asset: st.empty) -> None:
+    if generated:
+        asset.text_area(label="", value=generated, height=int(interface_whole_height * 1.151), label_visibility='collapsed')
+
+def display_result() -> None:
+    container = st.container(height=int(interface_whole_height * 1.211))
     with container:
         result_display_asset = st.empty()
-    return {
-        "result_display_asset": result_display_asset
-    }
+    return result_display_asset
+
+def display_result_generation_tab() -> None:
+    container = st.container(height=int(interface_whole_height * 1.211))
+    with container:
+        result_generation_display_asset = st.empty()
+    return result_generation_display_asset
 
 def generation_on_click() -> None:
     st.write("generation complete")
@@ -100,7 +108,16 @@ def main_interface() -> Dict[str, Any]:
         fewshot_generation_button = st.button("few-shot 생성", on_click=lambda: generation_on_click())
 
     with col3:
-        asset = display_result(prompt)
+        tab1, tab2 = st.tabs(["동작 프롬프트", "결과 확인"])
+        with tab1:
+            asset_combined_prompt = display_result()
+        with tab2:
+            asset_generation_result = display_result_generation_tab()
+        asset = {
+            "combined_prompt": asset_combined_prompt,
+            "generation_result": asset_generation_result
+        }
+
     return {
         "prompt": prompt,
         "requirements": requirements,
@@ -115,7 +132,8 @@ def main_interface() -> Dict[str, Any]:
         "example_append": example_append,
         "example_addition_notice": example_addition_notice,
         "fewshot_generation_button": fewshot_generation_button,
-        "result_display_asset": asset["result_display_asset"]
+        "result_combined_prompt": asset["combined_prompt"],
+        "result_generation_fewshot": asset["generation_result"]
     }
 
 def render() -> Data:
