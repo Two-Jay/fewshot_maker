@@ -92,9 +92,9 @@ def postprocess(data: Data) -> Data:
 not_yet_generated_notice = "아직 생성되지 않았습니다."
 
 def update_interface(data: Data) -> None:
-    data.get("count_notice").text(f"생성시 필요 토큰 개수: {data.get('token_count')}")
+    data.get("count_notice").text(f"생성시 필요 입력 토큰 개수: {data.get('token_count')}")
     cost = data.get("token_cost")
-    data.get("cost_notice").text(f"생성 비용: {cost:.5f} 달러")
+    data.get("cost_notice").text(f"생성 비용: {cost:.5f} 달러 | 이 비용은 임의적 산출비용입니다. 더 많은 비용이 부과될 수 있습니다.")
     if data.get("example_append"):
         if data.get("assistant_output").get():
             st.session_state.examples.append({
