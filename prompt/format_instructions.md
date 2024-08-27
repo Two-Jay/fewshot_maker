@@ -1,6 +1,6 @@
 ```
 
-Those are "Fewshot Examples that satisfies the request."
+Those are generated fewshot examples for good case.
 
 <fewshot examples 1>
 
@@ -11,7 +11,7 @@ Those are "Fewshot Examples that satisfies the request."
 <fewshot examples {{count_generation}}>
 
 
-Those are "Fewshot Examples that does not satisfies the request."
+Those are generated fewshot examples for bad case.
 
 <fewshot examples 1>
 
