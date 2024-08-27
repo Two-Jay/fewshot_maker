@@ -32,8 +32,9 @@ if the user_input is empty, the assistant_output is a expected output by the use
 {{sample}}
 ```
 
-
 Considering the sample above, generate good & bad examples that meet the content of "requirements" and "constraints".
+- Good examples must meet the content of "requirements"
+- Bad examples must create examples that don't meet the "requirements" intentionally.
 
 ### output
 generate {{count_generation}} examples for both correct and wrong cases.
