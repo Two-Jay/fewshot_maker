@@ -15,6 +15,7 @@ def slider() -> Dict[str, Any]:
         st.sidebar.success("API Key 유효성 검사 성공")
     else:
         st.sidebar.error("API Key 유효성 검사 실패")
+    st.sidebar.write(f"Fewshot_Maker는 GPT-4o를 사용합니다.")
     return {
         "api_key": api_key,
         "is_validate": is_validate,
