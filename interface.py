@@ -88,7 +88,7 @@ def generation_on_click() -> None:
 
 def main_interface() -> Dict[str, Any]:
     st.header("few-shot 프롬프트 생성기")
-    st.write("대상 프롬프트와 정답 제약조건을 입력하면, 출력에 도움이 되는 예제를 생성합니다.")
+    st.write("대상 프롬프트와 생성할 퓨샷의 요구조건 및 제약조건을 입력하면, 출력에 도움이 되는 예제를 생성합니다.")
 
     col1, col2, col3 = st.columns(3)
     with col1:
