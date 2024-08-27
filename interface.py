@@ -93,7 +93,7 @@ def main_interface() -> Dict[str, Any]:
     col1, col2, col3 = st.columns(3)
     with col1:
         prompt = st.text_area("대상 프롬프트", key="prompt", height=int(interface_whole_height * 0.5))
-        count_generation = st.number_input("생성할 예제 개수", min_value=1, max_value=10, step=1, value=5, key="count_generation")
+        count_generation = st.number_input("생성할 예제 개수", min_value=3, max_value=10, step=1, value=5, key="count_generation")
         requirements = st.text_area("정답 제약조건", key="requirements", height=int(interface_whole_height * 0.25))
         constraints = st.text_area("오답 제약조건", key="constraints", height=int(interface_whole_height * 0.25))
         count_notice = st.empty()
