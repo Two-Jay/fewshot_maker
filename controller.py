@@ -34,16 +34,25 @@ def combine_prompt(data: Data) -> str:
 
 from openai import OpenAI
 
-def generate_fewshot(combined_prompt: str, api_key: str, is_validate: bool) -> str:
+def generate_fewshot(combined_prompt: str, api_key: str, is_validate: bool, data: Data) -> str:
     if api_key == "":
         return ""
+    if data:
+        hyperparams = {
+            "temperature": data.get("temperature"),
+            "max_tokens": 2000,
+            "top_p": data.get("top_p"),
+            "frequency_penalty": data.get("frequency_penalty"),
+            "presence_penalty": data.get("presence_penalty")
+        }
     if is_validate:
         client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": combined_prompt}
-            ]
+            ],
+            **hyperparams
         )
         return response.choices[0].message.content
     else:
@@ -59,7 +68,7 @@ def calculate_cost(prompt : str, data: Data) -> float:
     input_token_count = len(enc.encode(prompt))
     max_example_length = max(
         (len(example["user_input"]) + len(example["assistant_output"]) 
-         for example in st.session_state.examples),
+          for example in st.session_state.examples),
         default=0
     )
     output_expacted_token_count = max_example_length * data.get("count_generation")
@@ -74,7 +83,7 @@ def postprocess(data: Data) -> Data:
     data.set("token_cost", token_cost)
     data.set("token_count", token_count)
     if data.get("fewshot_generation_button"):
-        result = generate_fewshot(prompt, data.get("api_key"), data.get("is_validate"))
+        result = generate_fewshot(prompt, data.get("api_key"), data.get("is_validate"), data)
         data.set("result_generation_fewshot", result)
     else:
         data.set("result_generation_fewshot", "")
